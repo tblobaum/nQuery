@@ -11,6 +11,12 @@ both jquery and zepto counterparts
 The ultimate goal is to have a full fledged framework to modify the DOM 
 in realtime from the server side. Similar to jquery and zepto.
 
+Install
+-------
+
+    $ npm install nodeQuery
+    
+
 Use it on the server
 -----
 ```javascript

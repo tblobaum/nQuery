@@ -1,7 +1,9 @@
 {
 	"name" : "nodeQuery", 
 	"description" : "DOM manipulation from the server.", 
-	"version" : "0.0.2",
+	"author" : "Thomas Blobaum", 
+	"version" : "0.0.3",
+	"main" : "index.js",
     "keywords" : [
         "DOM",
         "manipulation",
@@ -20,9 +22,9 @@
 	},
 	"repository" : {
 		"type" : "git",
-		"url" : " "
+		"url" : "https://tblobaum@github.com/tblobaum/nodeQuery.git"
 	}, 
 	"engines" : {
-		"node" : ">=0.4.12"
+		"node" : ">=0.4.x"
 	}
 }
