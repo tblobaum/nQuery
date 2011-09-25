@@ -1,4 +1,6 @@
-== nodeQuery.js: a server-side DOM manipulation framework
+nodeQuery.js 
+============
+A realtime server-side DOM manipulation framework
 
 Zepto.js is a minimalist framework for mobile WebKit browsers,
 with a jQuery-compatible chaining syntax.
@@ -12,25 +14,53 @@ both jquery and zepto counterparts
 The ultimate goal is to have a full fledged framework to modify the DOM 
 in realtime from the server side similar to jquery.
 
-= Methods:
+Usage
+-----
+```javascript
 
-  html('new html'): set the contents of the element(s)
-  text('new text'): set the text contents of the element(s)
-  append(), prepend(): like html(), but add html (or a DOM Element or a Zepto object) to element contents
-  before(), after(): add html (or a DOM Element or a Zepto object) before/after the element
-  appendTo(), prependTo(): reverse appending/prepending
-  show(): forces elements to be displayed (only works correctly for block elements right now)
-  hide(): removes a elements from layout
-  attr('attribute', 'value'): set element attribute
-  css('css property', 'value'): set a CSS property
+    // set the html contents of the element(s)
+    $('body').html('<div class="app"></div>');
 
-= Requirements:
+    // set the text contents of the element(s)
+    $('.app').text('Hello World');
+    
+    // add html (or a DOM Element) after the element
+    $('.app').after('->>');
+    
+    // add html (or a DOM Element) before the element
+    $('.app').before('<<-');
+    
+    // add html (or a DOM Element) at the beginning of the element contents
+    $('.container').prepend('Clock:');
+    
+    // add html (or a DOM Element) at the end of the element contents
+    $('.container').append('is the current time');
+    
+    // reverse of append
+    $('.container').appendTo('.app');
+    
+    // reverse prepend
+    $('.container').prependTo('.app');
+    
+    // forces elements to be hidden
+    $('.clock').hide();
+    
+    // forces elements to be displayed
+    $('.clock').show();
+     
+    // set a CSS property
+    $('.clock').css('background-color', '#eee');
+       
 
-This module works with dnode, redis, and jquery or zepto to let you use a number
+````
+Requirements:
+-------------
+
+Works with dnode, redis, and jquery or zepto to let you use a number
 of (limited for now) methods on the server side, which will update the client 
 element on the client machine right away.  Check out the clock example.
 
-= Example:
-
+Example:
+--------
 run app.js in the examples folder (install any packages you might need)
 visit http://localhost:3000/index.html
