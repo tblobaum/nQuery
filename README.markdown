@@ -2,9 +2,6 @@ nodeQuery.js
 ============
 A realtime server-side DOM manipulation framework
 
-Zepto.js is a minimalist framework for mobile WebKit browsers,
-with a jQuery-compatible chaining syntax.
-
 nodeQuery.js is a minimalist framework that brings DOM selectors 
 live to the server side.
 
@@ -12,7 +9,7 @@ live to the server side.
 both jquery and zepto counterparts
 
 The ultimate goal is to have a full fledged framework to modify the DOM 
-in realtime from the server side similar to jquery.
+in realtime from the server side. Similar to jquery and zepto.
 
 Use it on the server
 -----
