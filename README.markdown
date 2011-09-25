@@ -14,10 +14,14 @@ both jquery and zepto counterparts
 The ultimate goal is to have a full fledged framework to modify the DOM 
 in realtime from the server side similar to jquery.
 
-Usage
+Use it on the server
 -----
 ```javascript
 
+dnode(function (client, conn) {
+
+  conn.on('$', function () { // similar to $(document).ready()
+    
     // set the html contents of the element(s)
     $('body').html('<div class="app"></div>');
 
@@ -50,7 +54,10 @@ Usage
      
     // set a CSS property
     $('.clock').css('background-color', '#eee');
-       
+    
+  });
+    
+}).use(nodeQuery).listen(app);
 
 ````
 Requirements:
@@ -63,4 +70,4 @@ element on the client machine right away.  Check out the clock example.
 Example:
 --------
 run app.js in the examples folder (install any packages you might need)
-visit http://localhost:3000/index.html
+and then visit http://localhost:3000/index.html for a realtime clock
