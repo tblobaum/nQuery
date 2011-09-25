@@ -1,0 +1,28 @@
+{
+	"name" : "nodeQuery", 
+	"description" : "DOM manipulation from the server.", 
+	"version" : "0.0.2",
+    "keywords" : [
+        "DOM",
+        "manipulation",
+        "jquery",
+        "zepto",
+        "redis",
+        "dnode",
+        "socket.io",
+        "browserify"
+    ],
+	"dependencies" : {
+		"browserify" : "x",
+		"dnode" : "x",
+		"hashish" : "x",
+		"redis" : "x"
+	},
+	"repository" : {
+		"type" : "git",
+		"url" : " "
+	}, 
+	"engines" : {
+		"node" : ">=0.4.12"
+	}
+}
