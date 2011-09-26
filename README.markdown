@@ -23,10 +23,9 @@ Use it on the server
 So far, the following methods have been implemented.  You may bind click events with live, 
 and you are able to use all of the event types that are available with jquery or zepto.
 
-    swipe swipeLeft swipeRight swipeUp swipeDown doubleTap tap longTap
-    focusin focusout load resize scroll unload click dblclick 
-    mousedown mouseup mousemove mouseover mouseout 
-    change select keydown keypress keyup error
+    swipe swipeLeft swipeRight swipeUp swipeDown doubleTap tap longTap focusin focusout load 
+    resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout change 
+    select keydown keypress keyup error
 
 ```javascript
 
