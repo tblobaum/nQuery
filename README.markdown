@@ -33,10 +33,11 @@ dnode(function (client, conn) {
 
   conn.on('$', function () { // similar to $(document).ready()
     
-    $('.container').append('<a href="#" class="clickable">Click me, Im a binding.</a>');
+    $('.container').append('<a href="#/click" class="clickable">Click me, Im a binding.</a>');
     
     $('.clickable').live('click', function () {
         $('.clickable').html('You clicked it!');
+        $('.clickable').attr('href', console.log);
     });
 
     $('.container').append('<span class="hoverable">Hover me.</span>');
