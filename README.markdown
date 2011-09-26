@@ -19,15 +19,53 @@ Install
 
 Use it on the server
 -----
+
+So far, the following methods have been implemented.  You may bind click events with live, 
+and you are able to use all of the event types that are available with jquery or zepto.
+
+    swipe swipeLeft swipeRight swipeUp swipeDown doubleTap tap longTap
+    focusin focusout load resize scroll unload click dblclick 
+    mousedown mouseup mousemove mouseover mouseout 
+    change select keydown keypress keyup error
+
 ```javascript
 
 dnode(function (client, conn) {
 
   conn.on('$', function () { // similar to $(document).ready()
     
+    $('.container').append('<a href="#" class="clickable">Click me, Im a binding.</a>');
+    
+    $('.clickable').live('click', function () {
+        $('.clickable').html('You clicked it!');
+    });
+
+    $('.container').append('<span class="hoverable">Hover me.</span>');
+    
+    $('.hoverable').live('mouseover', function () {
+        $('.hoverable').html('You hovered it!');
+    });
+    
+    $('.hoverable').live('mouseout', function () {
+        $('.hoverable').html('Im back again!');
+    });
+
+    // get the name of the selector (useful to determine if html element exists)
+    $('body').get(console.log);
+    
+    // get the number of elements
+    $('body').size(console.log);
+    
+    // get the index of the element
+    $('body').index(console.log);
+    
+    $('body').height(console.log);
+    
+    $('body').width(console.log);
+
     // set the html contents of the element(s)
     $('body').html('<div class="app"></div>');
-
+    
     // set the text contents of the element(s)
     $('.app').text('Hello World');
     
@@ -57,6 +95,12 @@ dnode(function (client, conn) {
      
     // set a CSS property
     $('.clock').css('background-color', '#eee');
+    
+    // set an attribute
+    $('.clock').attr('background-color', '#eee');
+    
+    // get an attribute
+    $('.clock').attr(console.log);
     
   });
     

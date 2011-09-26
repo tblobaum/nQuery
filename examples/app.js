@@ -13,18 +13,43 @@ example = function (client, conn) {
         $('.app').text('Hello World');
         $('.app').after('->>');
         $('.app').before('<<-');
-        $('.container').prepend('Clock:');
-        $('.container').append('is the current time');
+        $('.container').prepend('<h3>Current time</h3>');
+        $('.container').append('<small>from the server</small>');
         $('.container').appendTo('.app');
         $('.container').prependTo('.app');
         $('.clock').hide();
         $('.clock').show();
-        $('.clock').css('border', '2px');
-        $('.clock').css('background-color', '#eee');
+        $('.app').css('border', '2px solid #222');
+        $('.app').css('background-color', '#eee');
+        $('.clock').attr('title', 'Current time');
         $('div').append('!');
         setInterval(function () {
             $('.clock').html(new Date() );
-        }, 50);
+        }, 100);
+        
+        $('.container').append('<a href="#/clickable" class="clickable">Click me, Im a binding.</a>');
+        
+        $('.clickable').live('click', function () {
+            $('.clickable').html('You clicked it!');
+            console.log('Clicked link ');
+            $('.clickable').attr('href', console.log);
+        });
+
+        $('.container').append('<span class="hoverable">Hover me.</span>');
+        
+        $('.hoverable').live('mouseover', function () {
+            $('.hoverable').html('You hovered it!');
+        });
+        
+        $('.hoverable').live('mouseout', function () {
+            $('.hoverable').html('Im back again!');
+        });
+        
+        $('body').get(console.log);
+        $('body').size(console.log);
+        $('body').index(console.log);
+        $('body').height(console.log);
+        $('body').width(console.log);
     });
 };
 
