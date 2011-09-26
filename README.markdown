@@ -1,4 +1,4 @@
-nodeQuery.js 
+nodeQuery.js - bringing the $ to the server
 ============
 A realtime server-side DOM manipulation framework
 
