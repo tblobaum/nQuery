@@ -114,7 +114,10 @@ Works with dnode, redis, and jquery or zepto to let you use a number
 of (limited for now) methods on the server side, which will update the client 
 element on the client machine right away.  Check out the clock example.
 
-Example:
---------
-run app.js in the examples folder (install any packages you might need)
-and then visit http://localhost:3000/index.html for a realtime clock
+Examples:
+---------
+Check out the examples folder for a few demos. There are two different clocks 
+that run based on the server time, and a twitter search app that implements 
+backbone conventions.
+
+
