@@ -69,7 +69,7 @@ Visit the html file you created to see "Hello World"
 
 Notes
 -----
-Remember that, just because you can write jquery on the serer doesnt mean you will always want to.  A click event being bound to the server for a form is amazingly powerful, but if your mouseover or swipe event only changes the display features of your app (i.e. color, size) then it most likely still belongs on the client to reduce the server load.  There is method similar to $(document).ready() on the client as well as the server.  On the client it is nQuery.ready() although you may still use $(document).ready()
+Remember that, just because you can write jquery on the serer doesnt mean you will always want to.  A click event being bound to the server for a form is amazingly powerful, but if your mouseover or swipe event only changes the display features of your app (i.e. color, size) then it most likely still belongs on the client to reduce the server load.  There is a method in nQuery.js similar to $(document).ready() for the client as well as the server.  On the client it is nQuery.ready()
 
 ```javascript
 
