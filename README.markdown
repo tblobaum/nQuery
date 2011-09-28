@@ -71,8 +71,13 @@ Notes
 -----
 Remember that, just because you can write jquery on the serer doesnt mean you will always want to.  A click event being bound to the server for a form is amazingly powerful, but if your mouseover or swipe event only changes the display features of your app (i.e. color, size) then it most likely still belongs on the client to reduce the server load.  There is a method in nQuery.js similar to $(document).ready() for the client as well as the server.  On the client it is nQuery.ready()
 
-```javascript
-
+```html
+<!doctype html>
+<html>
+<body>
+<script type='text/javascript' src='/jquery.js' charset='utf-8'></script> 
+<script type='text/javascript' src='/nquery.js' charset='utf-8'></script>
+<script type='text/javascript'>
 nQuery.ready(function(options) {
     
     // optionally get something from the server with ready(options)
@@ -80,7 +85,9 @@ nQuery.ready(function(options) {
     // ...
     
 });
-
+</script>
+</body>
+</html>
 ````
 
 Methods
