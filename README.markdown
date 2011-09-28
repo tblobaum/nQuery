@@ -162,14 +162,8 @@ Server(function (client, conn) {
 }).use(nQuery).listen(expressApp);
 
 ````
-Requirements:
--------------
 
-Works with dnode, redis, and jquery or zepto to let you use a number
-of (limited for now) methods on the server side, which will update the client 
-element on the client machine right away.  Check out the clock example.
-
-Examples:
+More Examples:
 ---------
 Check out the examples folder for a few demos. There are two different clocks 
 that run based on the server time, a twitter search app that implements 
