@@ -1,22 +1,17 @@
 nQuery.js
 =========
 
-nQuery.js lets you use $() on the server and it manipulates the browser side in realtime.  
-It uses Socket.io, Dnode, Browserify, and either jquery or Zepto.
+nQuery.js lets you use $() on the server to manipulate the browser side in realtime. It does 
+this using Socket.io, Dnode, Browserify, and either jquery or Zepto.
 
 nQuery.js is a minimalist DOM manipulation framework, it's fast, and its bringing all of the 
 jquery methods to the server so you dont have to write (or serve!) any client side javascript.
 
 The current API matches both jquery and zepto counterparts, so you can use it with either one.
 
-The goal is to have a full DOM manipulation framework that works in realtime from the server  
-side.  This means you are mostly just setting attributes, html, values and binding  
-events in jquery just like you would normally, but these methods are called to on the server 
-side of your code. 
+The goal is to have a full DOM manipulation framework that works in realtime from the server side.  This means you are mostly just setting attributes, html, values and binding events in jquery just like you would normally, but these methods work seamlessly with the server side of your code so you dont even have to think about a REST for your data.
 
-You can write your jquery code right alongside your database calls (in a simple app) and 
-you can completely forget about REST and HTTP, you dont need to create a representational state 
-because there is only one state.
+You can write your jquery code right alongside your database calls (in a simple app) and you can completely forget about REST and HTTP, you dont need to create a representational state because there is only one state.
 
 tl:dr; The stack is flat.  Realtime apps achieve newfound elegance.
 
