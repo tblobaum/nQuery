@@ -9,11 +9,11 @@ jquery methods to the server so you dont have to write (or serve!) any client si
 
 The current API matches both jquery and zepto counterparts, so you can use it with either one.
 
-The goal is to have a full DOM manipulation framework that works in realtime from the server side.  This means you are mostly just setting attributes, html, values and binding events in jquery just like you would normally, but these methods work seamlessly with the server side of your code so you dont even have to think about a REST for your data.
+The goal is to have a full DOM manipulation framework that works in realtime from the server side.  This means you are mostly just setting attributes, html, values and binding events in jquery just like you would normally, but these methods work seamlessly with the server side of your code.
 
-You can write your jquery code right alongside your database calls (in a simple app) and you can completely forget about REST and HTTP, you dont need to create a representational state to transfer your data because you only ever transfer it directly into the DOM.
+You can write your jquery code right alongside your database calls (in a simple app) and you can almost forget about REST and HTTP (except for when working with external resources) -- you dont need to create an http representational state to transfer your data because you only ever transfer it directly into the DOM.
 
-tl:dr; The stack is flat.  Realtime apps achieve newfound elegance.
+tl:dr; The stack becomes flat.
 
 Install
 -------
