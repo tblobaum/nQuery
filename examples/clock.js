@@ -52,13 +52,13 @@ var example = function (client, conn) {
     });
 };
 
-var app = express.createServer();
-app.use(nQuery.bundle);
-app.use(express.static(__dirname + '/public'));
-app.listen(3000);
+var expressApp = express.createServer();
+expressApp.use(nQuery.bundle);
+expressApp.use(express.static(__dirname + '/public'));
+expressApp.listen(3000);
 
 Server()
     .use(example)
     .use(nQuery)
-    .listen(app);
+    .listen(expressApp);
     
