@@ -169,4 +169,5 @@ Check out the examples folder for a few demos. There are two different clocks
 that run based on the server time, a twitter search app that implements 
 backbone conventions and a simple hello world app.
 
+MIT License
 
