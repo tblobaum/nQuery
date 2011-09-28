@@ -2,14 +2,13 @@
 	"name" : "nodeQuery", 
 	"description" : "DOM manipulation from the server.", 
 	"author" : "Thomas Blobaum", 
-	"version" : "0.0.41",
+	"version" : "0.0.5",
 	"main" : "index.js",
     "keywords" : [
         "DOM",
         "manipulation",
         "jquery",
         "zepto",
-        "redis",
         "dnode",
         "socket.io",
         "browserify"
@@ -17,8 +16,6 @@
 	"dependencies" : {
 		"browserify" : "x",
 		"dnode" : "x",
-		"hashish" : "x",
-		"redis" : "x"
 	},
 	"repository" : {
 		"type" : "git",

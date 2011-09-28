@@ -1,14 +1,11 @@
-var dnode          = require('dnode');
-var browserify     = require('browserify');
-var express        = require('express');
+var express = require('express');
+var Server = require('dnode');
+var nQuery = require('../');
 var http           = require('http');
-var redis          = require('redis');
-var nodeQuery      = require('../');
-nQpath             = nodeQuery.path;
 var _              = require('underscore');
 var mustache       = require('mustache');
 
-example = function (client, conn) {
+var example = function (client, conn) {
     conn.on('$', function () {
 
         var AppModel = Minibone.Model.extend({
@@ -88,26 +85,19 @@ example = function (client, conn) {
         });
         
         var app = new AppRouter();
+        ready();
 
     });
 };
 
-app = express.createServer();
-
-var bundle = browserify({
-    'entry': nQpath,
-    'require': ['dnode'],
-    'filter': require('uglify-js'),
-    'mount': '/nodeQuery.js',
-});
-
-app.use(bundle);
+var app = express.createServer();
+app.use(nQuery.bundle);
 app.use(express.static(__dirname + '/public'));
 app.listen(3000);
 
-dnode()
+Server()
     .use(example)
-    .use(nodeQuery)
+    .use(nQuery)
     .listen(app);
     
 var Minibone = {

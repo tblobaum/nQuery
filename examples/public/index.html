@@ -1,11 +1,32 @@
 <!doctype html>
 <html>
 <head>
-    <title>nodeQuery Demo</title>
-    <!-- * Works with Zepto or jQuery -->
-    <script type='text/javascript' src='/vendor/zepto.js' charset='utf-8'></script> 
-    <script type='text/javascript' src='/nodeQuery.js' charset='utf-8'></script> 
+    <title>Loading...</title>
 </head>
 <body>
+<script type='text/javascript' src='/jquery.js' charset='utf-8'></script> 
+<script type='text/javascript' src='/nquery.js' charset='utf-8'></script>
+<script>
+
+// Do something when jquery is ready
+$(document).ready(function() {
+
+    // set the title
+    $('title').html('jQuery ready.');
+    
+});
+
+// Do something after the server has fired ready()
+nQuery.ready(function(options) {
+    
+    // optionally get something from the server with ready()
+    console.log(options);
+    
+    // set the title
+    $('title').html('Loaded.');
+    
+});
+
+</script>
 </body>
 </html>
