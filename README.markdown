@@ -17,8 +17,47 @@ Install
     $ npm install nodeQuery
     
 
-Use it on the server
+Usage
 -----
+Create a file to serve up jquery and nquery
+
+```html
+<!doctype html>
+<html>
+<body>
+<script type='text/javascript' src='/jquery.js' charset='utf-8'></script> 
+<script type='text/javascript' src='/nquery.js' charset='utf-8'></script>
+</body>
+</html>
+````
+
+Create an app.js file
+
+```javascript
+
+var express = require('express');
+var Server = require('dnode');
+var nQuery = require('nodeQuery');
+
+var expressApp = express.createServer();
+expressApp.use(nQuery.bundle);
+expressApp.use(express.static(__dirname + '/public'));
+expressApp.listen(3000);
+
+var app = function (client, conn) {
+    conn.on('$', function (ready) {
+        $('body').append('Hello World');
+        ready();
+    });
+};
+
+Server()
+    .use(app)
+    .use(nQuery)
+    .listen(expressApp);
+
+````
+
 
 So far, the following methods have been implemented.  You may bind click events with live, 
 and you are able to use all of the event types that are available with jquery or zepto.
@@ -117,7 +156,7 @@ element on the client machine right away.  Check out the clock example.
 Examples:
 ---------
 Check out the examples folder for a few demos. There are two different clocks 
-that run based on the server time, and a twitter search app that implements 
-backbone conventions.
+that run based on the server time, a twitter search app that implements 
+backbone conventions and a simple hello world app.
 
 
