@@ -74,9 +74,10 @@ Methods
 So far only a limited number of jquery/zepto methods are available, but these include some 
 of the most powerful functionality in jquery.  You may create live bindings to events and you
 can use all of the event types that are available with jquery or zepto to do this, including:
+
     swipe swipeLeft swipeRight swipeUp swipeDown doubleTap tap longTap focusin focusout load     resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout change     select keydown keypress keyup error
 
-Here is some sample usage of most of the methods you can use:
+Sample usage of methods you can use on the server:
 
 ```javascript
 
