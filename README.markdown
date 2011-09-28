@@ -42,16 +42,15 @@ Create an app.js file
 var expressApp = express.createServer();
 
 expressApp.use(nQuery.bundle);
-
 expressApp.use(express.static(__dirname + '/public'));
-
 expressApp.listen(3000);
 
-var app = function (client, conn) {
+var hello_world = function (client, conn) {
 
     conn.on('$', function (ready) {
     
         $('body').append('Hello World');
+        
         ready();
         
     });
@@ -59,7 +58,7 @@ var app = function (client, conn) {
 };
 
 Server()
-    .use(app)
+    .use(hello_world)
     .use(nQuery)
     .listen(expressApp);
 
