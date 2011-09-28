@@ -1,15 +1,24 @@
-nodeQuery.js - bringing the $ to the server
-============
-A realtime server-side DOM manipulation framework
+nQuery.js
+=========
 
-nodeQuery.js is a minimalist framework that brings DOM selectors 
-live to the server side.
+nQuery.js lets you use $() on the server and it manipulates the browser side in realtime.  
+It uses Socket.io, Dnode, Browserify, and either jquery or Zepto.
 
-100% jQuery coverage is not a design goal but the current API matches
-both jquery and zepto counterparts
+nQuery.js is a minimalist DOM manipulation framework, it's fast, and its bringing all of the 
+jquery methods to the server so you dont have to write (or serve!) any client side javascript.
 
-The ultimate goal is to have a full fledged framework to modify the DOM 
-in realtime from the server side. Similar to jquery and zepto.
+The current API matches both jquery and zepto counterparts, so you can use it with either one.
+
+The goal is to have a full DOM manipulation framework that works in realtime from the server  
+side.  This means you are mostly just setting attributes, html, values and binding  
+events in jquery just like you would normally, but these methods are called to on the server 
+side of your code. 
+
+You can write your jquery code right alongside your database calls (in a simple app) and 
+you can completely forget about REST and HTTP, you dont need to create a representational state 
+because there is only one state.
+
+tl:dr; The stack is flat.  Realtime apps achieve newfound elegance.
 
 Install
 -------
@@ -19,7 +28,7 @@ Install
 
 Usage
 -----
-Create a file to serve up jquery and nquery
+Create a file to serve up jquery and nquery and put it in /public
 
 ```html
 <!doctype html>
@@ -58,19 +67,24 @@ Server()
 
 ````
 
+Visit the html file you created to see "Hello World"
 
-So far, the following methods have been implemented.  You may bind click events with live, 
-and you are able to use all of the event types that are available with jquery or zepto.
 
-    swipe swipeLeft swipeRight swipeUp swipeDown doubleTap tap longTap focusin focusout load 
-    resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout change 
-    select keydown keypress keyup error
+Methods
+-------
+
+So far only a limited number of jquery/zepto methods are available, but these include some 
+of the most powerful funcitonality in jquery.  You may create live bindings to events and you
+can use all of the event types that are available with jquery or zepto to do this, including:
+    swipe swipeLeft swipeRight swipeUp swipeDown doubleTap tap longTap focusin focusout load     resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout change     select keydown keypress keyup error
+
+Here is some sample usage of most of the methods you can use:
 
 ```javascript
 
-dnode(function (client, conn) {
+Server(function (client, conn) {
 
-  conn.on('$', function () { // similar to $(document).ready()
+  conn.on('$', function (ready) { // similar to $(document).ready()
     
     $('.container').append('<a href="#/click" class="clickable">Click me, Im a binding.</a>');
     
@@ -141,9 +155,12 @@ dnode(function (client, conn) {
     // get an attribute
     $('.clock').attr(console.log);
     
+    // call "nQuery.ready()" on the browser
+    ready();
+    
   });
     
-}).use(nodeQuery).listen(app);
+}).use(nQuery).listen(expressApp);
 
 ````
 Requirements:

@@ -2,12 +2,12 @@ var express = require('express');
 var Server = require('dnode');
 var nQuery = require('../');
 
-var app = express.createServer();
-app.use(nQuery.bundle);
-app.use(express.static(__dirname + '/public'));
-app.listen(3000);
+var expressApp = express.createServer();
+expressApp.use(nQuery.bundle);
+expressApp.use(express.static(__dirname + '/public'));
+expressApp.listen(3000);
 
-var Application = function (client, conn) {
+var app = function (client, conn) {
     conn.on('$', function (ready) {
         $('body').append('Hello World');
         ready();
@@ -15,6 +15,6 @@ var Application = function (client, conn) {
 };
 
 Server()
-    .use(Application)
+    .use(app)
     .use(nQuery)
-    .listen(app);
+    .listen(expressApp);
