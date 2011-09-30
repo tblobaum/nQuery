@@ -6,7 +6,7 @@ var _ = require('underscore');
 var mustache = require('mustache');
 
 var example = function (client, conn) {
-    conn.on('$', function () {
+    conn.on('$', function (ready) {
 
         var AppModel = Minibone.Model.extend({
             initialize: function(params) {

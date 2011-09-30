@@ -4,7 +4,7 @@ var nQuery = require('../');
 
 var example = function (client, conn) {
 
-    conn.on('$', function () {
+    conn.on('$', function (ready) {
     
         setInterval( function() {
             $('body').html(new Date());
