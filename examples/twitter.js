@@ -27,8 +27,8 @@ var example = function (client, conn) {
             },
             
             render: function () {
-                $('body').html('<h2>Twitter Search</h2>');
-	            var template = '<div id="ui-app"><input value="node.js" /><button>Search</button><div id="ui-tweets"></div></div>';
+                $('body').html('<h3>Twitter Search</h3>');
+	            var template = '<div id="ui-app"><h4>id: {{id}}</h4><input value="node.js" /><button>Search</button><div id="ui-tweets"></div></div>';
 	            this.el = mustache.to_html(template, this.model.attributes);
 	            return this;
             },
@@ -84,7 +84,7 @@ var example = function (client, conn) {
             },
         });
         
-        var app = new AppRouter();
+        var app = new AppRouter({id:conn.id});
         ready();
 
     });
