@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Loading...</title>
+    <link href='style.css' media='all' rel='stylesheet' type='text/css' /> 
 </head>
 <body>
 <script type='text/javascript' src='/jquery.js' charset='utf-8'></script> 
@@ -13,6 +14,14 @@ $(document).ready(function() {
 
     // set the title
     $('title').html('jQuery ready.');
+
+    $('.items li').live('dblclick', function () {
+        $(this).attr('class', 'todo editing');    
+    });
+    
+    $('#create-todo').live('submit', function (e) {
+        e.preventDefault();
+    });
     
 });
 

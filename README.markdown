@@ -13,7 +13,6 @@ The goal is to have a full DOM manipulation framework that works in realtime fro
 
 You can write your jquery code right alongside your database calls (in a simple app) and you can almost forget about REST and HTTP (except for when working with external resources) -- you dont need to create an http representational state to transfer your data because you only ever transfer it directly into the DOM.
 
-tl:dr; The stack becomes flat.
 
 Install
 -------
@@ -48,13 +47,10 @@ expressApp.listen(3000);
 var hello_world = function (client, conn) {
 
     conn.on('$', function (ready) {
-    
+        var $ = conn.$;
         $('body').append('Hello World');
-        
         ready();
-        
     });
-    
 };
 
 Server()
@@ -106,6 +102,7 @@ Sample usage of methods you can use on the server:
 Server(function (client, conn) {
 
   conn.on('$', function (ready) { // similar to $(document).ready()
+    var $ = conn.$;
     
     $('.container').append('<a href="#/click" class="clickable">Click me, Im a binding.</a>');
     
@@ -117,10 +114,21 @@ Server(function (client, conn) {
     $('.container').append('<span class="hoverable">Hover me.</span>');
     
     $('.hoverable').live('mouseover', function () {
-        $('.hoverable').html('You hovered it!');
+        $('.hoverable').html('hover event');
     });
     
-    $('.hoverable').live('mouseout', function () {
+    // bind an event to an element and any future elements that match the selector
+    $('.title').live('swipe', function () {
+        $('.title').html('swipe event');
+    });
+    
+    // bind an event to an element which already exists in the dom
+    $('.hoverable').bind('mouseout', function () {
+        $('.hoverable').html('Im back again!');
+    });
+    
+    // unbind an event
+    $('.hoverable').unbind('mouseout', function () {
         $('.hoverable').html('Im back again!');
     });
 
@@ -161,6 +169,9 @@ Server(function (client, conn) {
     // reverse prepend
     $('.container').prependTo('.app');
     
+    // replace element with html
+    $('.foo').replaceWith('<div></div>');
+    
     // forces elements to be hidden
     $('.clock').hide();
     
@@ -175,6 +186,9 @@ Server(function (client, conn) {
     
     // get an attribute
     $('.clock').attr(console.log);
+    
+    // serialize a form or list of elements
+    $('.form').serialize(console.log);
     
     // call "nQuery.ready()" on the browser
     ready();

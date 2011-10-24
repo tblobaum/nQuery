@@ -9,6 +9,7 @@ expressApp.listen(3000);
 
 var app = function (client, conn) {
     conn.on('$', function (ready) {
+        var $ = conn.$;
         $('body').append('Hello World');
         ready();
     });

@@ -1,0 +1,13 @@
+<li id="<%- item.id %>"> 
+  <div class="todo <%= item.checked ? 'done' : '' %>">
+    <div class='display'>
+      <input class='check' type='checkbox' name='checked' value="<%- item.id %>" <%= item.checked ? 'checked="checked"' : '' %>> 
+     <div class='todo-text'><%- item.name %></div> 
+      <span class='todo-destroy'></span>
+    </div> 
+   <div class='edit'> 
+      <input class='todo-input' type='text' name='name' value="<%- item.name %>"> 
+    </div> 
+  </div>
+</li> 
+

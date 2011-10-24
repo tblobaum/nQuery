@@ -7,6 +7,7 @@ var mustache = require('mustache');
 
 var example = function (client, conn) {
     conn.on('$', function (ready) {
+        var $ = conn.$;
 
         var AppModel = Minibone.Model.extend({
             initialize: function(params) {
