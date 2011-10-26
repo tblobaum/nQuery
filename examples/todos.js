@@ -8,7 +8,7 @@ Framework.set('database', 'redis');
 Framework.set('templates directory', 'templates');
 Framework.set('template engine', 'ejs');
 
-nQuery.debug = false;
+nQuery.debug = true;
 Framework.debug = true;
 
 var todosApp = function (client, conn) {
