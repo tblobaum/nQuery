@@ -2,36 +2,61 @@ var _ = require('underscore'),
 dnode = require('dnode')(),
 ejs = require('ejs'),
 Express = require('express'),
-filesystem = require('fs'),
 nQuery = require('../'),
-querystring = require('querystring'),
-Spartan = require('./lib/mvc.js'),
-home = filesystem.readFileSync(__dirname + '/public/index.html', 'utf-8');
+Framework = require('./lib/mvc.js');
+Framework.set('database', 'redis');
+Framework.set('templates directory', 'templates');
+Framework.set('template engine', 'ejs');
 
-Spartan.set('templates', '/templates');
+nQuery.debug = false;
+Framework.debug = true;
 
-var dnodeApp = function (client, conn) {
+var todosApp = function (client, conn) {
+    var $ = conn.$;
     conn.stream = 'items';
-    var $ = conn.$, 
-        app, 
+    var app, 
         model, 
         view;
     
-    var AppModel = Spartan.Model.Extend({
-        model: 'items', 
+    var ItemsModel = Framework.Model.Extend({
+        model: 'items',
         initialize: function (params) {
-            console.log('model init');
+            console.log('ItemsModel init');
         }
     });
     
-    var AppView = Spartan.View.Extend({
+    var ItemsView = Framework.View.Extend({
         initialize: function (params) {
-            $('body').append(params.templates.app);
+            console.log('ItemsView init');
+        }
+    });
+    
+    var ItemsController = Framework.Controller.Extend({
+        initialize: function (params) {
+            console.log('ItemsController init');
+        }
+    });
+    
+    var AppModel = Framework.Controller.Extend({
+        initialize: function (params) {
+            console.log('AppModel init');
+            this.items = new ItemsModel();
+        }
+    });
+    
+    var AppView = Framework.View.Extend({
+        el: $('#todoapp'),
+        initialize: function (params) {
+            console.log('AppView init');
+            this.Html = [];
+            this.items = new ItemsView();
+            
+            $('body').append(this.templates.app);
             
             // handle new todo event
             $('#create-todo').live('submit', function () {
                 $('#new-todo').serialize(function (data) {
-                    model.add(querystring.parse(data))
+                    model.items.add($.parseQuerystring(data))
                 });
                 $('#new-todo').attr('value', '');
             });
@@ -39,8 +64,8 @@ var dnodeApp = function (client, conn) {
             // handle removing checked items
             $('#removeItems').live('click', function () {
                 $('input').serialize(function (data) {
-                    var d = querystring.parse(data);
-                    model.remove(d['checked']);
+                    var d = $.parseQuerystring(data);
+                    model.items.remove(d['checked']);
                 });
             });
             
@@ -66,7 +91,7 @@ var dnodeApp = function (client, conn) {
         },
         renderItem: function (item) {
             item.checked = item.checked || false;
-            var html = ejs.render(this.templates.item, { 'locals': { 'item': item } });
+            var html = Framework.render(this.templates.item, { 'locals': { 'item': item } });
             if (this.Html[item.id] && this.Html[item.id] !== html) {
                 $('#'+item.id).replaceWith(html);
             } else if (!this.Html[item.id]) {
@@ -76,9 +101,10 @@ var dnodeApp = function (client, conn) {
         },
     });
     
-    var AppController = Spartan.Controller.Extend({
+    var AppController = Framework.Controller.Extend({
         initialize: function (params) {
-            console.log('controller init');
+            console.log('AppController init');
+            this.items = new ItemsController();
         }
     });
     
@@ -87,41 +113,43 @@ var dnodeApp = function (client, conn) {
         app = new AppController();
         model = new AppModel();
         view = new AppView();
+
+        model.items.on('initialize', function (item) {
         
-        model.on('initialize', function (item) {
-            // handle destroy event
+            // handle todo destroy
             $('#'+ item.id + ' .todo-destroy').live('click', function () {
-                model.remove(item.id);
+                model.items.remove(item.id);
             });
             
-            // handle todo name change 
+            // handle todo name edit 
             $('#'+ item.id + ' .edit input').live('blur', function () {
                 $('#'+ item.id + ' .todo').removeClass('editing');    
                 $('#'+ item.id + ' .edit input').attr('value', function (v) {
                     item.name = v;
-                    model.update(item);
+                    model.items.update(item);
                 });
             });
             
-            // handle todo done change
+            // handle todo checkbox
             $('#'+ item.id + ' .display input').live('click', function () {  
                 $('#'+ item.id + ' .display input').serialize(function (data) {
-                    var d = querystring.parse(data);
+                    var d = $.parseQuerystring(data);
                     if (d['checked']) item.checked = 'done';
                     else item.checked = '';
-                    model.update(item);
+                    model.items.update(item);
                 });
             }); 
+            
         });
         
-        model.on('sync', function (newdocs) {
+        model.items.on('sync', function (newdocs) {
             view.renderItems(newdocs);
-            var removedIds = _.difference(_.pluck(model.collection, 'id'), _.pluck(newdocs, 'id'));
+            var removedIds = _.difference(_.pluck(model.items.collection, 'id'), _.pluck(newdocs, 'id'));
             view.cleanupRemoved(removedIds);
         });
         
-        Spartan.bind(conn, model);
-        model.read(model.sync);
+        Framework.bind(conn, model.items);
+        model.items.read(model.items.sync);
         ready();
         
     });
@@ -133,13 +161,13 @@ express
     .use(nQuery.bundle)
     .use(Express.static(__dirname + '/public'))
     .use(function (req, res, next) {
-        res.end(home);
+        res.redirect('/');
     })
     .listen(3000);
 
 dnode
     .use(nQuery)
-    .use(Spartan.pubsub)
-    .use(dnodeApp)
+    .use(Framework.middleware)
+    .use(todosApp)
     .listen(express);
 

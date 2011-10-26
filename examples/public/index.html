@@ -36,6 +36,12 @@ nQuery.ready(function(options) {
     
 });
 
+// Do something after the server has fired closed()
+nQuery.closed(function(data) {
+
+    $('#todoapp').html('<h1>Sorry, the connection was lost.</h1>');
+    
+});
 </script>
 </body>
 </html>

@@ -1,27 +1,31 @@
 {
-	"name" : "nodeQuery", 
-	"description" : "DOM manipulation from the server.", 
-	"author" : "Thomas Blobaum", 
-	"version" : "0.0.5",
-	"main" : "index.js",
-    "keywords" : [
-        "DOM",
-        "manipulation",
-        "jquery",
-        "zepto",
-        "dnode",
-        "socket.io",
-        "browserify"
-    ],
-	"dependencies" : {
-		"browserify" : "x",
-		"dnode" : "x"
-	},
-	"repository" : {
-		"type" : "git",
-		"url" : "https://tblobaum@github.com/tblobaum/nodeQuery.git"
-	}, 
-	"engines" : {
-		"node" : ">=0.4.x"
-	}
+  "name": "nodeQuery",
+  "description": "DOM manipulation from the server.",
+  "author": "Thomas Blobaum",
+  "version": "0.0.5",
+  "main": "index.js",
+  "keywords": [
+    "DOM",
+    "manipulation",
+    "jquery",
+    "zepto",
+    "dnode",
+    "socket.io",
+    "browserify"
+  ],
+  "dependencies": {
+    "browserify": "x",
+    "dnode": "x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://tblobaum@github.com/tblobaum/nodeQuery.git"
+  },
+  "engines": {
+    "node": ">=0.4.x"
+  },
+  "subdomain": "todos",
+  "scripts": {
+    "start": "examples/todos.js"
+  }
 }
