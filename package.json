@@ -11,6 +11,7 @@
     "zepto",
     "dnode",
     "socket.io",
+    "RPC",
     "browserify"
   ],
   "dependencies": {
