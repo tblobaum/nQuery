@@ -1,7 +1,9 @@
-// Simple MVC framework 
-// - redis pubsub built in
-// - automatically loads views
-// - automatically loads view rendering engine
+/**  Simple MVC framework 
+  *
+  *  redis pubsub built in
+  *  automatically loads views
+  *  automatically loads view rendering engine
+  */
 
 var _ = require('underscore'),
 emitter = require('events').EventEmitter,
@@ -48,7 +50,7 @@ exports.set = function () {
     switch (key) {
     
         case 'database':
-            console.log('setting database', value);
+            if (exports.debug) console.log('setting database', value);
             exports.database = value;
             exports.db = require(value);
             if (value === 'redis') exports.db = exports.db.createClient();
@@ -56,18 +58,19 @@ exports.set = function () {
         break;
         
         case 'template engine':
-            console.log('setting template engine', value);
+            if (exports.debug) console.log('setting template engine', value);
             exports['template engine'] = value;
             exports[value] = require(value);
             exports.render = exports[value].render;
         break;
         
         case 'templates directory':
-            console.log('setting templates directory', value);
+            if (exports.debug) console.log('setting templates directory', value);
             var dir = arguments[1] || 'views';
             walk('./' + dir, function (e, tpls) {
+                tpls = tpls || [];
                 if (exports.debug) console.log('Loaded ' + Object.keys(tpls).length + ' views from ' + dir);
-                templates = tpls;
+                exports.templates = tpls;
             });
         break;
         
@@ -98,7 +101,7 @@ redisSub.on('message', function(stream, data) {
     });
 });
 
-exports.bind = function (conn, model) {
+exports.redisPubSub = function (conn, model) {
     if(!exports.middleware.clients[conn.stream]) {
         exports.middleware.clients[conn.stream] = {};
     }
@@ -108,13 +111,20 @@ exports.bind = function (conn, model) {
 };
 
 exports.Model = function (params) {
-    params = params || {};
-    this.modelName = params.model || '';
-    this.property = params.model + '_';
+    params = _.extend({}, params, this);
+    this.property = this.model + '_';
     this.collection = [];
     var self = this;
     _.extend(this, new emitter, {
     
+        comparator: function (collection) {
+            return _.sortBy(collection, function (v) {
+                var proplen = self.property.length+1;
+                var foo = v.id.slice(proplen);
+                return Math.abs(foo);
+            });
+        },
+        
         add: function (doc) {
             self.create(doc);
         },
@@ -122,104 +132,123 @@ exports.Model = function (params) {
         create: function (doc) {
             doc.id = doc.id || _.uniqueId(self.property);
             if (!doc.name) return;
-            exports.db.get(self.modelName, function (e, docs) {
-                docs = JSON.parse(docs); 
-                docs.push(doc);
-                docs = JSON.stringify(docs);
-                exports.db.set(self.modelName, docs, function (e) {
+            exports.db.get(self.model, function (e, collection) {
+                if (e) console.log(e);                
+                collection = JSON.parse(collection); 
+                collection.push(doc);
+                collection = JSON.stringify(collection);
+                exports.db.set(self.model, collection, function (e) {
                     self.emit('add', doc);
-                    redisPub.publish(self.modelName, docs);
+                    redisPub.publish(self.model, collection);
                 });
             });
         },
         
         read: function (fn) {
-            exports.db.get(self.modelName, function (e, docs) {
-                fn(JSON.parse(docs));
+            exports.db.get(self.model, function (e, collection) {
+                fn(JSON.parse(collection));
             });
         },
         
         update: function (doc) {
             if (!doc.name) return;
-            exports.db.get(self.modelName, function (e, docs) {
-                docs = _.reject(JSON.parse(docs), function (itm) {
+            exports.db.get(self.model, function (e, collection) {
+                collection = _.reject(JSON.parse(collection), function (itm) {
                     return (itm.id === doc.id);
                 });
-                docs.push(doc);
-                docs = JSON.stringify(docs);
-                exports.db.set(self.modelName, docs, function (e) {
-                    self.emit('change', doc);
-                    redisPub.publish(self.modelName, docs);
+                collection.push(doc);
+                collection = JSON.stringify(collection);
+                exports.db.set(self.model, collection, function (e) {
+                    self.emit('change', collection);
+                    redisPub.publish(self.model, collection);
                 });
             });
         },
         
         remove: function (ids) {
-            exports.db.get(self.modelName, function (err, docs) {
+            exports.db.get(self.model, function (err, collection) {
                 if (typeof ids === 'undefined') return;
                 if (typeof ids === 'string') ids = [].concat(ids);
-                self.emit('remove', ids);
-                docs = _.filter(JSON.parse(docs), function (itm) { 
-                    if (_.indexOf(ids, itm.id) < 0) return true;
-                    else return false;
+                collection = _.filter(JSON.parse(collection), function (itm) { 
+                    if (_.indexOf(ids, itm.id) < 0) {
+                        return true;
+                    } else {
+                        self.emit('remove', itm);
+                        return false;
+                    }
                 });
-                docs = JSON.stringify(docs);
-                exports.db.set(self.modelName, docs);
-                redisPub.publish(self.modelName, docs);
-            });
-        },
-        
-        comparator: function (docs) {
-            return _.sortBy(docs, function (v) {
-                return Math.abs(v.id.slice(self.modelName.length+1));
+                collection = JSON.stringify(collection);
+                exports.db.set(self.model, collection);
+                redisPub.publish(self.model, collection);
             });
         },
         
         sync: function (newdocs) {
             if (!newdocs) return;
             newdocs = self.comparator(newdocs);
+            
+            var ids = _.pluck(self.collection, 'id');
             for (var i=0, l=newdocs.length;i<l;i++) {
-                if (!_.include(_.pluck(self.collection, 'id'), newdocs[i].id)) {
-                    self.collection.push(newdocs[i]);
+                var id = newdocs[i].id;
+                var exist = _.include(ids, id);
+                if (!exist) {
+                    //self.collection.push(newdocs[i]);
                     self.emit('initialize', newdocs[i]);
                     self.initialize && self.initialize(newdocs[i]);
                 }
+                
             }
-            self.emit('sync', newdocs);
+            
+            var ids = _.pluck(newdocs, 'id');
+            for (var i=0, l=self.collection.length;i<l;i++) {
+                var item = self.collection[i];
+                var exist = _.include(ids, item.id);
+                if (!exist) {
+                    self.emit('remove', item);
+                }
+                
+            }
+                
+            self.collection = newdocs;
+            self.emit('sync', self.collection);
         }
         
     });
-};
+    return this;
 
-exports.Model.Extend = function (params) {
-    _.extend(exports.Model.prototype, params);
-    return _.bind(exports.Model, params, params);
 };
 
 exports.View = function (params) {
-    params = params || {};
-    var self = this;
-    _.extend(this, params, new emitter, {
-        'templates': templates
+    _.extend(this, new emitter, {
+        'templates': exports.templates
     });
-    this.initialize && this.initialize(this);
-    this.emit('initialize', this);
+    this.initialize && this.initialize(params);
+    this.emit('initialize', params);
+    return this;
 };
 
-exports.View.Extend = function (params) {
-    _.extend(exports.View.prototype, params);
-    return _.bind(exports.View, params, params);
+exports.Controller = function (params) {
+    _.extend(this, new emitter);
+    this.initialize && this.initialize(params);
+    this.emit('initialize', params);
+    return this;
 };
 
-exports.Controller = function (params) {        
-    _.extend(this, params, new emitter);
-    this.initialize && this.initialize(this);
-    this.emit('initialize', this);
+exports.Model.extend = function (params) {
+    return function (opts) {
+        return exports.Model.call(params, opts);
+    }
 };
 
-exports.Controller.Extend = function (params) {
-    params = params || {};
-    _.extend(exports.Controller.prototype, params);
-    return _.bind(exports.Controller, params, params);
+exports.View.extend = function (params) {
+    return function (opts) {
+        return exports.View.call(params, opts);
+    }
+};
+
+exports.Controller.extend = function (params) {
+    return function (opts) {
+        return exports.Controller.call(params, opts);
+    }
 };
 

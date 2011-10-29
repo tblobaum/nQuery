@@ -1,62 +1,119 @@
 var _ = require('underscore'),
-dnode = require('dnode')(),
-ejs = require('ejs'),
-Express = require('express'),
-nQuery = require('../'),
-Framework = require('./lib/mvc.js');
-Framework.set('database', 'redis');
+    rpc = require('dnode')(),
+    Express = require('express'),
+    nQuery = require('../'),
+    Framework = require('./lib/mvc.js');
+
+Framework.set('database', 'redis', { auth: '' });
 Framework.set('templates directory', 'templates');
 Framework.set('template engine', 'ejs');
 
-nQuery.debug = true;
-Framework.debug = true;
+Framework.db.set('items', JSON.stringify([]) );
+
+Framework.debug = false;
+nQuery.debug = false;
 
 var todosApp = function (client, conn) {
-    var $ = conn.$;
-    conn.stream = 'items';
     var app, 
-        model, 
-        view;
+    $ = conn.$;
+    conn.stream = 'items';
     
-    var ItemsModel = Framework.Model.Extend({
+    var ItemsModel = Framework.Model.extend({
         model: 'items',
-        initialize: function (params) {
-            console.log('ItemsModel init');
+        initialize: function (item) {
         }
     });
-    
-    var ItemsView = Framework.View.Extend({
+
+    var ItemsView = Framework.View.extend({
         initialize: function (params) {
-            console.log('ItemsView init');
-        }
-    });
-    
-    var ItemsController = Framework.Controller.Extend({
-        initialize: function (params) {
-            console.log('ItemsController init');
-        }
-    });
-    
-    var AppModel = Framework.Controller.Extend({
-        initialize: function (params) {
-            console.log('AppModel init');
-            this.items = new ItemsModel();
-        }
-    });
-    
-    var AppView = Framework.View.Extend({
-        el: $('#todoapp'),
-        initialize: function (params) {
-            console.log('AppView init');
-            this.Html = [];
-            this.items = new ItemsView();
+        },
+        addItem: function (item, model) {
             
-            $('body').append(this.templates.app);
+            // handle todo destroy
+            $('#'+ item.id + ' .todo-destroy').live('click', function () {
+                model.remove(item.id);
+            });
+            // handle todo name edit 
+            $('#'+ item.id + ' .edit input').live('blur', function () {
+                $('#'+ item.id + ' .todo').removeClass('editing');    
+                $('#'+ item.id + ' .edit input').attr('value', function (v) {
+                    item.name = v;
+                    model.update(item);
+                });
+            });
+            // handle todo checkbox
+            $('#'+ item.id + ' .display input').live('click', function () {  
+                $('#'+ item.id + ' .display input').serialize(function (data) {
+                    var d = $.parseQuerystring(data);
+                    if (d['checked']) item.checked = 'done';
+                    else item.checked = '';
+                    model.update(item);
+                });
+            });
+        },
+        
+        renderItems: function (items) {
+            var str = '';
+            var chkd = _.pluck(items, 'checked');
+            chkd = _.compact(chkd);
+            if (chkd.length > 0) {
+                str = '<a href="#" id="removeItems">Remove '+
+                chkd.length+' completed item(s)</a>';
+            }
+            $('#todo-stats').html('<span class="todo-count">'+
+                items.length + ' items left.</span>'+
+                '<span class="todo-clear">'+str+'</span>');
+            for (var k in items) {
+                this.renderItem(items[k]);
+            }
+        },
+        
+        renderItem: function (item) {
+            item.checked = item.checked || false;
+            var html = Framework.render(this.templates.item, { 
+                locals: { 
+                    item: item 
+                }
+            });
             
-            // handle new todo event
+            $('#'+item.id).replaceWith(html);
+        }
+    });
+
+    var ItemsController = Framework.Controller.extend({
+        initialize: function (params) {            
+            this.model = params.model;
+            this.view = params.view;
+            
+            this.model.on('initialize', function (item) {
+                $('#todo-list').prepend('<li id="'+item.id+'" > </li>');
+                params.view.addItem(item, params.model);
+            });
+            
+            this.model.on('add', function (item) {
+                params.view.renderItem(item);
+            });
+        
+            this.model.on('remove', function (item) {
+                $('#'+item.id).remove();
+            });
+            
+            
+            this.model.on('change', function (collection) {
+                params.view.renderItems(collection);
+            });
+            
+            this.model.on('sync', function (collection) {
+                params.view.renderItems(collection);
+            });
+        
+            
+            // handle ItemsController initialize
+            
+            // handle adding new todo
             $('#create-todo').live('submit', function () {
                 $('#new-todo').serialize(function (data) {
-                    model.items.add($.parseQuerystring(data))
+                    params.model.create($.parseQuerystring(data));
                 });
                 $('#new-todo').attr('value', '');
             });
@@ -65,94 +122,46 @@ var todosApp = function (client, conn) {
             $('#removeItems').live('click', function () {
                 $('input').serialize(function (data) {
                     var d = $.parseQuerystring(data);
-                    model.items.remove(d['checked']);
+                    params.model.remove(d['checked']);
                 });
             });
             
         },
-        cleanupRemoved: function (arr) {
-            if (!arr) return;
-            for (var p=0, l=arr.length;p<l;p++) $('#'+arr[p]).remove();
-        },
-        renderItems: function (items) {
-            var str = '';
-            var chkd = _.compact(_.pluck(items, 'checked'));
-            if (chkd.length > 0) {
-                str = '<a href="#" id="removeItems">Remove '+
-                chkd.length+' completed item(s)</a>';
-            }
-            $('#todo-stats').html('<span class="todo-count">'+
-                items.length + ' items left.</span>'+
-                '<span class="todo-clear">'+str+'</span>');
-                
-            for (var k in items) {
-                this.renderItem(items[k]);
-            }
-        },
-        renderItem: function (item) {
-            item.checked = item.checked || false;
-            var html = Framework.render(this.templates.item, { 'locals': { 'item': item } });
-            if (this.Html[item.id] && this.Html[item.id] !== html) {
-                $('#'+item.id).replaceWith(html);
-            } else if (!this.Html[item.id]) {
-                $('.items').prepend(html); 
-            }
-            this.Html[item.id] = html;
-        },
     });
-    
-    var AppController = Framework.Controller.Extend({
+
+    var AppModel = Framework.Model.extend({model: 'app'});
+    var AppView = Framework.View.extend({
         initialize: function (params) {
-            console.log('AppController init');
-            this.items = new ItemsController();
+            $('body').append(this.templates.app);
         }
+    });
+
+    var AppController = Framework.Controller.extend({
+        initialize: function (params) {
+            this.model = params.model;
+            this.view = params.view;
+            this.items = params.items;
+            
+        },
     });
     
     conn.on('$', function (ready) {
-    
-        app = new AppController();
-        model = new AppModel();
-        view = new AppView();
-
-        model.items.on('initialize', function (item) {
-        
-            // handle todo destroy
-            $('#'+ item.id + ' .todo-destroy').live('click', function () {
-                model.items.remove(item.id);
-            });
-            
-            // handle todo name edit 
-            $('#'+ item.id + ' .edit input').live('blur', function () {
-                $('#'+ item.id + ' .todo').removeClass('editing');    
-                $('#'+ item.id + ' .edit input').attr('value', function (v) {
-                    item.name = v;
-                    model.items.update(item);
-                });
-            });
-            
-            // handle todo checkbox
-            $('#'+ item.id + ' .display input').live('click', function () {  
-                $('#'+ item.id + ' .display input').serialize(function (data) {
-                    var d = $.parseQuerystring(data);
-                    if (d['checked']) item.checked = 'done';
-                    else item.checked = '';
-                    model.items.update(item);
-                });
-            }); 
+        app = new AppController({
+            model: new AppModel(),
+            view: new AppView(),
+            items: new ItemsController({
+                model: new ItemsModel(),
+                view: new ItemsView(),
+            })
             
         });
         
-        model.items.on('sync', function (newdocs) {
-            view.renderItems(newdocs);
-            var removedIds = _.difference(_.pluck(model.items.collection, 'id'), _.pluck(newdocs, 'id'));
-            view.cleanupRemoved(removedIds);
-        });
-        
-        Framework.bind(conn, model.items);
-        model.items.read(model.items.sync);
+        Framework.redisPubSub(conn, app.items.model);
+        app.items.model.read(app.items.model.sync);
         ready();
         
     });
+    
 };
 
 var express = Express.createServer();
@@ -165,9 +174,10 @@ express
     })
     .listen(3000);
 
-dnode
+rpc
     .use(nQuery)
     .use(Framework.middleware)
     .use(todosApp)
+    //.use(function (client, conn) { })
     .listen(express);
 
