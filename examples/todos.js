@@ -1,8 +1,9 @@
 var _ = require('underscore'),
 dnode = require('dnode')(),
 Express = require('express'),
-nQuery = require('nodeQuery'),
-Tube = require('./lib/mvc.js');
+nQuery = require('../'),
+Tube = require('tubes');
+//Tube.set('database', 'redis', [ 9470, 'nodejitsu:37b9aef8dd751c61f2589b7aa1b10609@perch.redistogo.com']);
 Tube.set('database', 'redis', [ 6379, '127.0.0.1']);
 Tube.set('templates directory', 'views');
 Tube.set('template engine', 'ejs');
