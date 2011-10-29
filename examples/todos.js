@@ -1,15 +1,12 @@
 var _ = require('underscore'),
-    rpc = require('dnode')(),
-    Express = require('express'),
-    nQuery = require('../'),
-    Framework = require('./lib/mvc.js');
-
+dnode = require('dnode')(),
+Express = require('express'),
+nQuery = require('../'),
+Framework = require('./lib/mvc.js');
 Framework.set('database', 'redis', { auth: '' });
 Framework.set('templates directory', 'templates');
 Framework.set('template engine', 'ejs');
-
 Framework.db.set('items', JSON.stringify([]) );
-
 Framework.debug = false;
 nQuery.debug = false;
 
@@ -26,6 +23,24 @@ var todosApp = function (client, conn) {
 
     var ItemsView = Framework.View.extend({
         initialize: function (params) {
+        },
+        render: function (params) {
+            
+            // handle adding new todo
+            $('#create-todo').live('submit', function () {
+                $('#new-todo').serialize(function (data) {
+                    params.model.create($.parseQuerystring(data));
+                });
+                $('#new-todo').attr('value', '');
+            });
+            
+            // handle removing checked items
+            $('#removeItems').live('click', function () {
+                $('input').serialize(function (data) {
+                    var d = $.parseQuerystring(data);
+                    params.model.remove(d['checked']);
+                });
+            });
         },
         addItem: function (item, model) {
             
@@ -81,55 +96,38 @@ var todosApp = function (client, conn) {
     });
 
     var ItemsController = Framework.Controller.extend({
-        initialize: function (params) {            
-            this.model = params.model;
-            this.view = params.view;
+        initialize: function (params) {
+            var self = this;    
+            this.model = new ItemsModel();
+            this.view = new ItemsView();
             
-            this.model.on('initialize', function (item) {
+            self.model.on('initialize', function (item) {
                 $('#todo-list').prepend('<li id="'+item.id+'" > </li>');
-                params.view.addItem(item, params.model);
+                self.view.addItem(item, self.model);
             });
             
-            this.model.on('add', function (item) {
-                params.view.renderItem(item);
+            self.model.on('add', function (item) {
+                self.view.renderItem(item);
             });
         
-            this.model.on('remove', function (item) {
+            self.model.on('remove', function (item) {
                 $('#'+item.id).remove();
             });
             
-            
-            this.model.on('change', function (collection) {
-                params.view.renderItems(collection);
+            self.model.on('change', function (collection) {
+                self.view.renderItems(collection);
             });
             
-            this.model.on('sync', function (collection) {
-                params.view.renderItems(collection);
-            });
-        
-            
-            // handle ItemsController initialize
-            
-            // handle adding new todo
-            $('#create-todo').live('submit', function () {
-                $('#new-todo').serialize(function (data) {
-                    params.model.create($.parseQuerystring(data));
-                });
-                $('#new-todo').attr('value', '');
+            self.model.on('sync', function (collection) {
+                self.view.renderItems(collection);
             });
             
-            // handle removing checked items
-            $('#removeItems').live('click', function () {
-                $('input').serialize(function (data) {
-                    var d = $.parseQuerystring(data);
-                    params.model.remove(d['checked']);
-                });
-            });
-            
+            self.view.render(self);
         },
     });
 
     var AppModel = Framework.Model.extend({model: 'app'});
+    
     var AppView = Framework.View.extend({
         initialize: function (params) {
             $('body').append(this.templates.app);
@@ -138,28 +136,17 @@ var todosApp = function (client, conn) {
 
     var AppController = Framework.Controller.extend({
         initialize: function (params) {
-            this.model = params.model;
-            this.view = params.view;
-            this.items = params.items;
-            
+            this.model = new AppModel();
+            this.view = new AppView();
+            this.items = new ItemsController();
         },
     });
     
     conn.on('$', function (ready) {
-        app = new AppController({
-            model: new AppModel(),
-            view: new AppView(),
-            items: new ItemsController({
-                model: new ItemsModel(),
-                view: new ItemsView(),
-            })
-            
-        });
-        
+        app = new AppController();
         Framework.redisPubSub(conn, app.items.model);
         app.items.model.read(app.items.model.sync);
         ready();
-        
     });
     
 };
@@ -174,10 +161,10 @@ express
     })
     .listen(3000);
 
-rpc
+dnode
     .use(nQuery)
     .use(Framework.middleware)
     .use(todosApp)
-    //.use(function (client, conn) { })
+    //.use(function (client, conn) { var $ = conn.$; })
     .listen(express);
 
