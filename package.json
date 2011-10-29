@@ -16,14 +16,16 @@
   ],
   "dependencies": {
     "browserify": "x",
-    "dnode": "x"
+    "underscore": "x",
+    "dnode": "x",
+    "uglify-js": "x"
   },
   "repository": {
     "type": "git",
     "url": "https://tblobaum@github.com/tblobaum/nodeQuery.git"
   },
   "engines": {
-    "node": ">=0.4.x"
+    "node": "~0.5.10"
   },
   "subdomain": "todos",
   "scripts": {
