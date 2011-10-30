@@ -201,7 +201,9 @@ Server(function (client, conn) {
 
 More Examples:
 ---------
-Check out the examples folder for a few demos. There are two different clocks 
+Check out the todos app written with [tubes](https://github.com/tblobaum/tubes) and nquery
+
+Check out the examples folder for a few very simple demos. There are two different clocks 
 that run based on the server time, a twitter search app that implements 
 backbone conventions and a simple hello world app.
 
