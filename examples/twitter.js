@@ -1,5 +1,5 @@
 var express = require('express');
-var Server = require('dnode');
+var dnode = require('dnode');
 var nQuery = require('../');
 var http = require('http');
 var _ = require('underscore');
@@ -96,9 +96,9 @@ expressApp.use(nQuery.bundle);
 expressApp.use(express.static(__dirname + '/public'));
 expressApp.listen(3000);
 
-Server()
-    .use(example)
+dnode()
     .use(nQuery)
+    .use(example)
     .listen(expressApp);
     
 var Minibone = {

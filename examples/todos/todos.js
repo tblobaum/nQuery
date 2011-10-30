@@ -1,36 +1,33 @@
 var _ = require('underscore'),
 dnode = require('dnode')(),
 Express = require('express'),
-nQuery = require('../'),
+nQuery = require('../../'),
 Tube = require('tubes');
+
 Tube.set('database', 'redis', [ 6379, '127.0.0.1']);
 Tube.set('templates directory', 'views');
 Tube.set('template engine', 'ejs');
-Tube.db.set('items', JSON.stringify([]) );
-Tube.debug = true;
-nQuery.debug = false;
 
-var todosApp = function (client, conn) {
+var Application = function (client, conn) {
     var app, 
-    $ = conn.$;
-    
-    var ItemsModel = Tube.Model.extend({
-        model: 'items',
-        initialize: function (item) {
+    $ = conn.$,
+    AppModel = Tube.Model.extend({model: 'app'}),
+    ItemsModel = Tube.Model.extend({model: 'items'});
+
+    var AppView = Tube.View.extend({
+        initialize: function (params) {
+            $('body').append(this.templates.app);
         }
     });
-
+    
     var ItemsView = Tube.View.extend({
-        initialize: function (params) {
-        },
-        render: function (params) {
-            
+        init: function (params) {
             // handle adding new todo
             $('#create-todo').live('submit', function () {
                 $('#new-todo').serialize(function (data) {
                     params.model.create($.parseQuerystring(data));
+                    $('#new-todo').attr('value', '');
                 });
-                $('#new-todo').attr('value', '');
             });
             
             // handle removing checked items
@@ -41,27 +38,24 @@ var todosApp = function (client, conn) {
                 });
             });
         },
-        addItem: function (item, model) {
-            
+        everyItem: function (item, model) {
             // handle todo destroy
-            $('#'+ item.id + ' .todo-destroy').live('click', function () {
+            $('#'+item.id+' .todo-destroy').live('click', function () {
                 model.remove(item.id);
             });
-            var str = '';
-     
             
             // handle todo name edit 
-            $('#'+ item.id + ' .edit input').live('blur', function () {
-                $('#'+ item.id + ' .todo').removeClass('editing');    
-                $('#'+ item.id + ' .edit input').attr('value', function (v) {
+            $('#'+item.id+' .edit input').live('blur', function () {
+                $('#'+item.id+' .todo').removeClass('editing');
+                $('#'+item.id+' .edit input').attr('value', function (v) {
                     item.name = v;
                     model.update(item);
                 });
             });
             
             // handle todo checkbox
-            $('#'+ item.id + ' .display input').live('click', function () {  
-                $('#'+ item.id + ' .display input').serialize(function (data) {
+            $('#'+item.id+' .display input').live('click', function () {  
+                $('#'+item.id+' .display input').serialize(function (data) {
                     var d = $.parseQuerystring(data);
                     if (d['checked']) item.checked = 'done';
                     else item.checked = '';
@@ -69,7 +63,6 @@ var todosApp = function (client, conn) {
                 });
             });
         },
-        
         renderItems: function (items) {
             var str = '';
             var chkd = _.pluck(items, 'checked');
@@ -79,13 +72,10 @@ var todosApp = function (client, conn) {
                 chkd.length+' completed item(s)</a>';
             }
             $('#todo-stats').html('<span class="todo-count">'+
-                items.length + ' items left.</span>'+
-                '<span class="todo-clear">'+str+'</span>');
-            for (var k in items) {
-                this.renderItem(items[k]);
-            }
+                items.length + ' items left.</span>'+'<span class="todo-clear">'
+                +str+'</span>');
+            for (var k in items) this.renderItem(items[k]);
         },
-        
         renderItem: function (item) {
             item.checked = item.checked || false;
             var html = Tube.render(this.templates.item, { 
@@ -97,7 +87,15 @@ var todosApp = function (client, conn) {
             $('#'+item.id).replaceWith(html);
         }
     });
-
+    
+    var AppController = Tube.Controller.extend({
+        initialize: function (params) {
+            this.model = new AppModel();
+            this.view = new AppView();
+            this.items = new ItemsController();
+        },
+    });
+    
     var ItemsController = Tube.Controller.extend({
         initialize: function (params) {
             var self = this;    
@@ -106,7 +104,7 @@ var todosApp = function (client, conn) {
             
             self.model.on('initialize', function (item) {
                 $('#todo-list').prepend('<li id="'+item.id+'" > </li>');
-                self.view.addItem(item, self.model);
+                self.view.everyItem(item, self.model);
             });
             
             self.model.on('add', function (item) {
@@ -125,29 +123,13 @@ var todosApp = function (client, conn) {
                 self.view.renderItems(collection);
             });
             
-            self.view.render(self);
+            self.view.init(self);
         },
     });
 
-    var AppModel = Tube.Model.extend({model: 'app'});
-    
-    var AppView = Tube.View.extend({
-        initialize: function (params) {
-            $('body').append(this.templates.app);
-        }
-    });
-
-    var AppController = Tube.Controller.extend({
-        initialize: function (params) {
-            this.model = new AppModel();
-            this.view = new AppView();
-            this.items = new ItemsController();
-        },
-    });
-    
-    conn.on('/app', function (ready) {
+    conn.on('$', function (ready) {
         app = new AppController();
-        
+
         // subscribe and initialize pubsub stream
         Tube.registerStream('items', conn, app.items.model.sync);
         
@@ -156,16 +138,6 @@ var todosApp = function (client, conn) {
         ready();
     });
     
-};
-
-var homepage = function (client, conn) {
-    var $ = conn.$;
-    
-    conn.on('/', function (ready) {
-        $('body').append('<div class="content"><h2>Home page</h2></div>');
-        $('.content').append('<a href="/app">See the Demo</a>');
-        ready();
-    });
 };
 
 var express = Express.createServer();
@@ -182,7 +154,6 @@ express
 dnode
     .use(Tube.middleware)
     .use(nQuery)
-    .use(todosApp)
-    .use(homepage)
+    .use(Application)
     .listen(express);
 
