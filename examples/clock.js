@@ -20,13 +20,13 @@ var example = function (client, conn) {
         $('body').append(html);
         
         setInterval( function() {
-            var seconds = new Date().getSeconds();
-            var sdegree = seconds * 6;
+            var ms = (new Date().getSeconds() * 1000) + new Date().getMilliseconds();
+            var sdegree = (ms * 0.006);
             var srotate = "rotate(" + sdegree + "deg)";
 
             $("#sec").css({"-moz-transform" : srotate, "-webkit-transform" : srotate});
 
-        }, 500 );
+        }, 70 );
 
 
         setInterval( function() {
