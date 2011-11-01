@@ -2,7 +2,7 @@
   "name": "nodeQuery",
   "description": "DOM manipulation from the server.",
   "author": "Thomas Blobaum",
-  "version": "0.0.7-5",
+  "version": "0.0.8-1",
   "main": "index.js",
   "keywords": [
     "DOM",
@@ -25,7 +25,7 @@
     "url": "https://tblobaum@github.com/tblobaum/nodeQuery.git"
   },
   "engines": {
-    "node": "~0.5.10"
+    "node": ">=0.4.10"
   },
   "subdomain": "todos",
   "scripts": {
