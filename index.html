@@ -132,15 +132,22 @@
 <img src='plus.png' width='60' />
 <img src='jquery.png' />
 </p>
-<p id="tagline"> 
-Real-time invocation of jQuery and Zepto 
-API calls on the server. using, 
-<a href="http://jquery.com/">jQuery</a>, 
-<a href="http://nodejs.org">node.js </a>, 
-<a href="http://socket.io">socket.io</a>, & 
-<a href="https://github.com/substack/dnode">dnode rpc</a>
-</p> 
-<p> 
+<h2 id="tagline"> 
+Work with jQuery from the scope of the server.
+</h2>
+<p>
+NodeQuery allows you to invoke jQuery API calls on the server and recieve 
+callbacks from the browser in real-time. You can effectively work with any 
+DOM (to the extent that jQuery can) without having to serve up any 
+client side javascript beyond jquery and nquery.
+</p>
+<p>
+Every call to the $ function is applied in real-time using the dnode-protocol
+over socket.io. nodeQuery uses a combination of remote message passing and 
+other techniques to integrate the jQuery API as seamlessly as possible with 
+the backend.
+</p>
+<p>
 The source code is automatically compressed (52kb) with 
 <a href="https://github.com/mishoo/UglifyJS">uglify-js</a>, setting 
 <code>nQuery.debug = true </code> will prevent this from happening.
@@ -151,6 +158,14 @@ The source code is automatically compressed (52kb) with
 <pre><code>$ npm install nodequery
 </code></pre> 
 
+
+<p>
+NodeQuery uses <a href="http://jquery.com/">jQuery</a> or 
+<a href="http://zeptojs.com/">Zepto</a>, 
+<a href="http://nodejs.org">node.js </a>, 
+<a href="http://socket.io">socket.io</a>, & 
+<a href="https://github.com/substack/dnode">dnode rpc</a>.
+</p>
 
 </div> 
 </div> 
