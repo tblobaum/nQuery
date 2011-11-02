@@ -1,4 +1,4 @@
-nQuery.js
+nQuery.js (beta)
 =========
 
 nQuery.js lets you use $() on the server to manipulate the browser side in realtime. It does 

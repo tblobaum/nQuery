@@ -1,28 +1,25 @@
-var express = require('express');
-var Server = require('dnode');
-var nQuery = require('../');
-
-var example = function (client, conn) {
-
-    conn.on('$', function (ready) {
-        var $ = conn.$;
-    
+var Express = require('express')
+    , dnode = require('dnode')()
+    , nQuery = require('../')
+    , express = Express.createServer();
+  
+var app = function ($, connection) {
+    $.on('ready', function () {
         setInterval( function() {
-            $('body').html(new Date());
+            $('body').html('<h1>' + new Date() + '</h1>');
         }, 100 );
-        
-        ready();
     });
-    
 };
 
-var expressApp = express.createServer();
-expressApp.use(nQuery.bundle);
-expressApp.use(express.static(__dirname + '/public'));
-expressApp.listen(3000);
+nQuery
+  .use(app);
 
-Server()
-    .use(example)
-    .use(nQuery)
-    .listen(expressApp);
-    
+express
+  .use(nQuery.middleware)
+  .use(Express.static(__dirname + '/public'))
+  .listen(3000);
+
+dnode
+  .use(nQuery.middleware)
+  .listen(express);
+
