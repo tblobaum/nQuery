@@ -5,7 +5,7 @@ var Express = require('express')
 
 var app = function ($, connection) {
 
-    $.on('ready', function (done) {
+    $.on('ready', function () {
         $('head').append('<style type="text/css"></style>');
         
         var style = '* { margin: 0; padding: 0; } #clock { position: relative;'+
@@ -54,7 +54,6 @@ var app = function ($, connection) {
             $("#min").css({"-moz-transform":mrotate,"-webkit-transform":mrotate});
         }, 1000 );
 
-        done();
     });
 };
 
