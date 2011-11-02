@@ -4,6 +4,7 @@ var Express = require('express')
     , express = Express.createServer();
 
 var app = function ($, connection) {
+
     $.on('ready', function (done) {
         $('head').append('<style type="text/css"></style>');
         
@@ -24,28 +25,32 @@ var app = function ($, connection) {
             '<li id="min"></li>'+
             '</ul>';
                  
-        $('body').html('<h4>Current time from within node.js</h4>');
-        $('body').append(html);
+        $('body')
+            .html('<h4>Current time from within node.js</h4>')
+            .append(html);
         
         setInterval( function() {
-            var ms =(new Date().getSeconds()*1000)+new Date().getMilliseconds();
-            var sdegree = (ms * 0.006);
-            var srotate = "rotate(" + sdegree + "deg)";
+            var ms =(new Date().getSeconds()*1000)+new Date().getMilliseconds()
+                , sdegree = (ms * 0.006)
+                , srotate = "rotate(" + sdegree + "deg)";
+                
             $("#sec").css({"-moz-transform":srotate,"-webkit-transform":srotate});
         }, 70 );
 
         setInterval( function() {
-            var hours = new Date().getHours();
-            var mins = new Date().getMinutes();
-            var hdegree = hours * 30 + (mins / 2);
-            var hrotate = "rotate(" + hdegree + "deg)";
+            var hours = new Date().getHours()
+                , mins = new Date().getMinutes()
+                , hdegree = hours * 30 + (mins / 2)
+                , hrotate = "rotate(" + hdegree + "deg)";
+                
             $("#hour").css({"-moz-transform":hrotate,"-webkit-transform":hrotate});
         }, 1000 );
 
         setInterval( function() {
-            var mins = new Date().getMinutes();
-            var mdegree = mins * 6;
-            var mrotate = "rotate(" + mdegree + "deg)";
+            var mins = new Date().getMinutes()
+                , mdegree = mins * 6
+                , mrotate = "rotate(" + mdegree + "deg)";
+                
             $("#min").css({"-moz-transform":mrotate,"-webkit-transform":mrotate});
         }, 1000 );
 
