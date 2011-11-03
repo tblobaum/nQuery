@@ -1,24 +1,21 @@
-nQuery.js (beta)
-=========
+nQuery (beta)
+=============
 
-nQuery.js lets you use $() on the server to manipulate the browser side in realtime. It does 
+nQuery lets you use $() on the server to manipulate the browser side in realtime. It accomplishes 
 this using Socket.io, Dnode, Browserify, and either jquery or Zepto.
 
-nQuery.js is a minimalist DOM manipulation framework, it's fast, and its bringing all of the 
-jquery methods to the server so you dont have to write (or serve!) any client side javascript.
+nQuery is a minimalist DOM manipulation framework, it's fast, and its bringing all of the 
+jquery methods to the server so you dont have to write (or serve!) any client side javascript in order to make a realtime browser application.
 
-The current API matches both jquery and zepto counterparts, so you can use it with either one.
+The current API matches both jquery and zepto counterparts, so you can include either one on the client side.
 
 The goal is to have a full DOM manipulation framework that works in realtime from the server side.  This means you are mostly just setting attributes, html, values and binding events in jquery just like you would normally, but these methods work seamlessly with the server side of your code.
-
-You can write your jquery code right alongside your database calls (in a simple app) and you can almost forget about REST and HTTP (except for when working with external resources) -- you dont need to create an http representational state to transfer your data because you only ever transfer it directly into the DOM.
 
 
 Install
 -------
 
     $ npm install nodeQuery
-    
 
 Usage
 -----
@@ -38,25 +35,29 @@ Create an app.js file
 
 ```javascript
 
-var expressApp = express.createServer();
-
-expressApp.use(nQuery.bundle);
-expressApp.use(express.static(__dirname + '/public'));
-expressApp.listen(3000);
-
-var hello_world = function (client, conn) {
-
-    conn.on('$', function (ready) {
-        var $ = conn.$;
+var Express = require('express')
+    , dnode = require('dnode')()
+    , nQuery = require('../')
+    , express = Express.createServer();
+    
+var app = function ($) {
+    $.on('ready', function () {
         $('body').append('Hello World');
-        ready();
     });
 };
 
-Server()
-    .use(hello_world)
-    .use(nQuery)
-    .listen(expressApp);
+nQuery
+  .use(app);
+
+express
+  .use(nQuery.middleware)
+  .use(Express.static(__dirname + '/public'))
+  .listen(3000);
+
+dnode
+  .use(nQuery.middleware)
+  .listen(express);
+
 
 ````
 
@@ -65,7 +66,7 @@ Visit the html file you created to see "Hello World"
 
 Notes
 -----
-Remember that, just because you can write jquery on the serer doesnt mean you will always want to.  A click event being bound to the server for a form is amazingly powerful, but if your mouseover or swipe event only changes the display features of your app (i.e. color, size) then it most likely still belongs on the client to reduce the server load.  There is a method in nQuery.js similar to $(document).ready() for the client as well as the server.  On the client it is nQuery.ready()
+Remember that just because you can write jquery on the serer doesnt mean you will always want to.  A click event being bound to the server for a form is amazingly powerful, but if your mouseover or swipe event only changes the display features of your app (i.e. color, size) then it most likely still belongs on the client to reduce the server load.  There is a method in nQuery.js similar to $(document).ready() for the client as well as the server.  On the client it is nQuery.ready()
 
 ```html
 <!doctype html>
@@ -75,11 +76,9 @@ Remember that, just because you can write jquery on the serer doesnt mean you wi
 <script type='text/javascript' src='/nquery.js' charset='utf-8'></script>
 <script type='text/javascript'>
 nQuery.ready(function(options) {
-    
     // optionally get something from the server with ready(options)
     // do something once the server has fired "ready()"
     // ...
-    
 });
 </script>
 </body>
@@ -99,10 +98,11 @@ Sample usage of methods you can use on the server:
 
 ```javascript
 
-Server(function (client, conn) {
-
-  conn.on('$', function (ready) { // similar to $(document).ready()
-    var $ = conn.$;
+nQuery.use(function ($, connection) {
+  // similar to '$(document).ready()', this function
+  // is called after the client DOM is ready, a callback is passed
+  // aswell, which calls 'nQuery.ready()' on the browser
+  $.on('ready', function (callback) { 
     
     $('.container').append('<a href="#/click" class="clickable">Click me, Im a binding.</a>');
     
@@ -191,11 +191,12 @@ Server(function (client, conn) {
     $('.form').serialize(console.log);
     
     // call "nQuery.ready()" on the browser
-    ready();
+    callback();
     
   });
-    
-}).use(nQuery).listen(expressApp);
+
+});
+
 
 ````
 
