@@ -94,7 +94,7 @@ can use all of the event types that are available with jquery or zepto to do thi
 
     swipe swipeLeft swipeRight swipeUp swipeDown doubleTap tap longTap focusin focusout load     resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout change     select keydown keypress keyup error
 
-Sample usage of methods you can use on the server:
+Sample usage of methods on the server:
 
 ```javascript
 
