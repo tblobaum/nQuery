@@ -2,7 +2,7 @@
   "name": "nodeQuery",
   "description": "DOM manipulation from the server.",
   "author": "Thomas Blobaum",
-  "version": "0.0.8-8",
+  "version": "0.0.8-9",
   "main": "index.js", 
   "keywords": [
     "DOM",
