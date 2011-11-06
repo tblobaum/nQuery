@@ -5,8 +5,8 @@ var http = require('http');
 var _ = require('underscore');
 var mustache = require('mustache');
 
-var example = function (client, conn) {
-    conn.on('$', function (ready) {
+var example = function ($, conn) {
+    $.on('ready', function (ready) {
         var $ = conn.$;
 
         var AppModel = Minibone.Model.extend({
@@ -92,13 +92,14 @@ var example = function (client, conn) {
 };
 
 var expressApp = express.createServer();
-expressApp.use(nQuery.bundle);
+expressApp.use(nQuery.middleware);
 expressApp.use(express.static(__dirname + '/public'));
 expressApp.listen(3000);
 
-dnode()
-    .use(nQuery)
-    .use(example)
+nQuery
+    .use(example);
+
+dnode(nQuery.middleware)
     .listen(expressApp);
     
 var Minibone = {
