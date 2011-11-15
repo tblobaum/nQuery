@@ -36,27 +36,27 @@ Create an app.js file
 ```javascript
 
 var Express = require('express')
-    , dnode = require('dnode')()
-    , nQuery = require('../')
-    , express = Express.createServer();
-    
+  , dnode = require('dnode')()
+  , nQuery = require('../')
+  , express = Express.createServer()
+  
 var app = function ($) {
-    $.on('ready', function () {
-        $('body').append('Hello World');
-    });
-};
+  $.on('ready', function () {
+    $('body').append('Hello World')
+  })
+}
 
 nQuery
-  .use(app);
+  .use(app)
 
 express
   .use(nQuery.middleware)
   .use(Express.static(__dirname + '/public'))
-  .listen(3000);
+  .listen(3000)
 
 dnode
   .use(nQuery.middleware)
-  .listen(express);
+  .listen(express)
 
 
 ````
