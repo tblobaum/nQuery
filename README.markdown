@@ -1,4 +1,4 @@
-nQuery (beta)
+nQuery (beta) -- <a href='http://todos-nquery.nodejitsu.com/'>live demo</a>
 =============
 Introducing nQuery.js, a crazy new library that lets you write jQuery on the 
 server. And yes it works with the browser in realtime. You can bind events 
