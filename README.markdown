@@ -88,12 +88,6 @@ nQuery.ready(function(options) {
 Methods
 -------
 
-So far only a limited number of jquery/zepto methods are available, but these include some 
-of the most powerful functionality in jquery.  You may create live bindings to events and you
-can use all of the event types that are available with jquery or zepto to do this, including:
-
-    swipe swipeLeft swipeRight swipeUp swipeDown doubleTap tap longTap focusin focusout load     resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout change     select keydown keypress keyup error
-
 Sample usage of methods on the server:
 
 ```javascript
@@ -200,10 +194,13 @@ nQuery.use(function ($, connection) {
 
 ````
 
+Events
+-------
+
+    swipe swipeLeft swipeRight swipeUp swipeDown doubleTap tap longTap focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout change     select keydown keypress keyup error
+
 More Examples:
 ---------
-Check out the todos app written with [tubes](https://github.com/tblobaum/tubes) and nquery
-
 Check out the examples folder for a few very simple demos. There are two different clocks 
 that run based on the server time, a twitter search app that implements 
 backbone conventions and a simple hello world app.
