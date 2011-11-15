@@ -1,16 +1,22 @@
 nQuery (beta)
 =============
+Introducing nQuery.js, a crazy new library that lets you write jQuery on the 
+server. And yes it works with the browser in realtime. You can bind events 
+directly to the server, such as swipe and hover.  Don't worry, it's fast.
 
-nQuery lets you use $() on the server to manipulate the browser side in realtime. It accomplishes 
-this using Socket.io, Dnode, Browserify, and either jquery or Zepto.
+nQuery is a minimalist DOM manipulation framework that is bringing jQuery 
+methods to the server so you dont have to serve client side javascript in 
+order to make a realtime cross-browser compatible 'aerogel' app.
 
-nQuery is a minimalist DOM manipulation framework, it's fast, and its bringing all of the 
-jquery methods to the server so you dont have to write (or serve!) any client side javascript in order to make a realtime browser application.
+The current API matches both jquery and zepto counterparts, so you can include 
+either one on the client side.
 
-The current API matches both jquery and zepto counterparts, so you can include either one on the client side.
+The goal is to have a full DOM manipulation framework that works in realtime 
+from the server side.  If you can get away with only using jQuery in your 
+application,this means you can completely isolate your client. nQuery methods 
+work seamlessly with the server side of your code.
 
-The goal is to have a full DOM manipulation framework that works in realtime from the server side.  This means you are mostly just setting attributes, html, values and binding events in jquery just like you would normally, but these methods work seamlessly with the server side of your code.
-
+<img src='http://upload.wikimedia.org/wikipedia/commons/3/3e/MVC_Diagram_3.jpg' />
 
 Install
 -------
@@ -64,6 +70,116 @@ dnode
 Visit the html file you created to see "Hello World"
 
 
+Methods
+-------
+
+Sample usage of methods on the server:
+
+```javascript
+
+nQuery
+  .use(function ($) {
+
+    // similar to $(document).ready, this function
+    // is called after the client DOM is ready, a callback is passed
+    // aswell, which calls nQuery.ready on the browser
+    $.on('ready', function (callback) { 
+      
+      $('body').append('<a href="#" class="link">Click me, Im a binding.</a>')
+      
+      $('a.link').live('click', function () {
+          $('a.link').html('You clicked it!')
+      });
+
+      $('body').append('<span class="hover">Hover me.</span>')
+      
+      $('.hover').live('mouseover', function () {
+          $('.hover').html('hover event')
+      });
+      
+      // bind an event to an element which already exists in the dom
+      $('.hover').bind('mouseout', function () {
+          $('.hover').html('Im back again!')
+      });
+      
+      // bind an event to an element and any future elements that match the selector
+      $('div').live('swipe', function () {
+          $('div').html('swipe event')
+      });
+      
+      // unbind an event
+      $('.hoverable').unbind('mouseout', function () {
+          $('.hoverable').html('Im back again!')
+      });
+
+      // get the name of the selector (useful to determine if html element exists)
+      $('body').get(console.log)
+
+      // get some other information about an element
+      $('body').size(console.log)
+      $('body').index(console.log)
+      $('body').height(console.log)
+      $('body').width(console.log)
+
+      // set the html contents of the element(s)
+      $('body').html('<div></div>')
+      
+      // set the text contents of the element(s)
+      $('div').text('Hello World')
+      
+      // add html (or a DOM Element) after the element
+      $('div').after('->>')
+      
+      // add html (or a DOM Element) before the element
+      $('div').before('<<-')
+      
+      // add html (or a DOM Element) at the beginning of the element contents
+      $('div').prepend('Clock:')
+      
+      // add html (or a DOM Element) at the end of the element contents
+      $('div').append('is the current time')
+      
+      // reverse of append
+      $('div').appendTo('.app')
+      
+      // reverse prepend
+      $('div').prependTo('.app')
+      
+      // replace element with html
+      $('div').replaceWith('<div></div>')
+      
+      // forces elements to be hidden
+      $('div').hide()
+      
+      // forces elements to be displayed
+      $('div').show()
+       
+      // set a CSS property
+      $('div').css('background-color', '#eee')
+      
+      // set an attribute
+      $('div').attr('background-color', '#eee')
+      
+      // get an attribute
+      $('a').attr(console.log)
+      
+      // serialize a form or list of elements
+      $('form').serialize(console.log)
+      
+      // call "nQuery.ready()" on the browser
+      callback()
+    })
+  })
+
+
+````
+
+Events
+-------
+
+    swipe swipeLeft swipeRight swipeUp swipeDown doubleTap tap longTap focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout change     select keydown keypress keyup error
+
+
 Notes
 -----
 Remember that just because you can write jquery on the serer doesnt mean you will always want to.  A click event being bound to the server for a form is amazingly powerful, but if your mouseover or swipe event only changes the display features of your app (i.e. color, size) then it most likely still belongs on the client to reduce the server load.  There is a method in nQuery.js similar to $(document).ready() for the client as well as the server.  On the client it is nQuery.ready()
@@ -71,10 +187,11 @@ Remember that just because you can write jquery on the serer doesnt mean you wil
 ```html
 <!doctype html>
 <html>
+<head><title>...</title></head>
 <body>
-<script type='text/javascript' src='/jquery.js' charset='utf-8'></script> 
-<script type='text/javascript' src='/nquery.js' charset='utf-8'></script>
-<script type='text/javascript'>
+<script src='//code.jquery.com/jquery.min.js' charset='utf-8'></script>
+<script src='/nquery.js' charset='utf-8'></script>
+<script>
 nQuery.ready(function(options) {
     // optionally get something from the server with ready(options)
     // do something once the server has fired "ready()"
@@ -84,120 +201,6 @@ nQuery.ready(function(options) {
 </body>
 </html>
 ````
-
-Methods
--------
-
-Sample usage of methods on the server:
-
-```javascript
-
-nQuery.use(function ($, connection) {
-  // similar to '$(document).ready()', this function
-  // is called after the client DOM is ready, a callback is passed
-  // aswell, which calls 'nQuery.ready()' on the browser
-  $.on('ready', function (callback) { 
-    
-    $('.container').append('<a href="#/click" class="clickable">Click me, Im a binding.</a>');
-    
-    $('.clickable').live('click', function () {
-        $('.clickable').html('You clicked it!');
-        $('.clickable').attr('href', console.log);
-    });
-
-    $('.container').append('<span class="hoverable">Hover me.</span>');
-    
-    $('.hoverable').live('mouseover', function () {
-        $('.hoverable').html('hover event');
-    });
-    
-    // bind an event to an element and any future elements that match the selector
-    $('.title').live('swipe', function () {
-        $('.title').html('swipe event');
-    });
-    
-    // bind an event to an element which already exists in the dom
-    $('.hoverable').bind('mouseout', function () {
-        $('.hoverable').html('Im back again!');
-    });
-    
-    // unbind an event
-    $('.hoverable').unbind('mouseout', function () {
-        $('.hoverable').html('Im back again!');
-    });
-
-    // get the name of the selector (useful to determine if html element exists)
-    $('body').get(console.log);
-    
-    // get the number of elements
-    $('body').size(console.log);
-    
-    // get the index of the element
-    $('body').index(console.log);
-    
-    $('body').height(console.log);
-    
-    $('body').width(console.log);
-
-    // set the html contents of the element(s)
-    $('body').html('<div class="app"></div>');
-    
-    // set the text contents of the element(s)
-    $('.app').text('Hello World');
-    
-    // add html (or a DOM Element) after the element
-    $('.app').after('->>');
-    
-    // add html (or a DOM Element) before the element
-    $('.app').before('<<-');
-    
-    // add html (or a DOM Element) at the beginning of the element contents
-    $('.container').prepend('Clock:');
-    
-    // add html (or a DOM Element) at the end of the element contents
-    $('.container').append('is the current time');
-    
-    // reverse of append
-    $('.container').appendTo('.app');
-    
-    // reverse prepend
-    $('.container').prependTo('.app');
-    
-    // replace element with html
-    $('.foo').replaceWith('<div></div>');
-    
-    // forces elements to be hidden
-    $('.clock').hide();
-    
-    // forces elements to be displayed
-    $('.clock').show();
-     
-    // set a CSS property
-    $('.clock').css('background-color', '#eee');
-    
-    // set an attribute
-    $('.clock').attr('background-color', '#eee');
-    
-    // get an attribute
-    $('.clock').attr(console.log);
-    
-    // serialize a form or list of elements
-    $('.form').serialize(console.log);
-    
-    // call "nQuery.ready()" on the browser
-    callback();
-    
-  });
-
-});
-
-
-````
-
-Events
--------
-
-    swipe swipeLeft swipeRight swipeUp swipeDown doubleTap tap longTap focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout change     select keydown keypress keyup error
 
 More Examples:
 ---------
