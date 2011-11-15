@@ -6,15 +6,15 @@ directly to the server, such as swipe and hover.  Don't worry, it's fast.
 
 nQuery is a minimalist DOM manipulation framework that is bringing jQuery 
 methods to the server so you dont have to serve client side javascript in 
-order to make a realtime cross-browser compatible 'aerogel' app.
+order to make a realtime cross-browser compatible 'lightweight' app.
 
 The current API matches both jquery and zepto counterparts, so you can include 
-either one on the client side.
+either one on the client side for the same effect.
 
 The goal is to have a full DOM manipulation framework that works in realtime 
 from the server side.  If you can get away with only using jQuery in your 
-application,this means you can completely isolate your client. nQuery methods 
-work seamlessly with the server side of your code.
+application, this means you can completely isolate your client away from your
+application logic. nQuery methods work seamlessly with the server side of your code.
 
 <img src='http://upload.wikimedia.org/wikipedia/commons/3/3e/MVC_Diagram_3.jpg' />
 
