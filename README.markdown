@@ -2,7 +2,7 @@ nQuery (beta)
 =============
 Introducing nQuery.js, a crazy new library that lets you write jQuery on the 
 server. And yes it works with the browser in realtime. You can bind events 
-directly to the server, such as swipe and hover.  Don't worry, it's fast.
+directly to the server, such as swipe and hover using RPC.  Don't worry, it's fast.
 
 nQuery is a minimalist DOM manipulation framework that is bringing jQuery 
 methods to the server so you dont have to serve client side javascript in 
@@ -14,7 +14,7 @@ either one on the client side for the same effect.
 The goal is to have a full DOM manipulation framework that works in realtime 
 from the server side.  If you can get away with only using jQuery in your 
 application, this means you can completely isolate your client away from your
-application logic. nQuery methods work seamlessly with the server side of your code.
+application logic.
 
 <img src='http://upload.wikimedia.org/wikipedia/commons/3/3e/MVC_Diagram_3.jpg' />
 
@@ -31,7 +31,7 @@ Create a file to serve up jquery and nquery and put it in /public
 <!doctype html>
 <html>
 <body>
-<script type='text/javascript' src='/jquery.js' charset='utf-8'></script> 
+<script src='//code.jquery.com/jquery.min.js' charset='utf-8'></script>
 <script type='text/javascript' src='/nquery.js' charset='utf-8'></script>
 </body>
 </html>
@@ -182,7 +182,12 @@ Events
 
 Notes
 -----
-Remember that just because you can write jquery on the serer doesnt mean you will always want to.  A click event being bound to the server for a form is amazingly powerful, but if your mouseover or swipe event only changes the display features of your app (i.e. color, size) then it most likely still belongs on the client to reduce the server load.  There is a method in nQuery.js similar to $(document).ready() for the client as well as the server.  On the client it is nQuery.ready()
+Remember that just because you can update your DOM from the server doesnt mean 
+you will always want to. A click or swipe event being bound to the server 
+can be amazingly responsive, but if the event only changes the display of your 
+app (i.e. color, size) then it most likely still belongs on the client to 
+reduce the server load.  There is a ready function in nQuery similar to 
+$(document).ready() for the client as well as the server.
 
 ```html
 <!doctype html>
@@ -204,9 +209,7 @@ nQuery.ready(function(options) {
 
 More Examples:
 ---------
-Check out the examples folder for a few very simple demos. There are two different clocks 
-that run based on the server time, a twitter search app that implements 
-backbone conventions and a simple hello world app.
+Check out the examples folder for a few simple demos.
 
 MIT License
 
