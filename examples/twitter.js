@@ -1,9 +1,9 @@
-var express = require('express');
-var dnode = require('dnode');
-var nQuery = require('../');
-var http = require('http');
-var _ = require('underscore');
-var mustache = require('mustache');
+var express = require('express')
+    , dnode = require('dnode')
+    , nQuery = require('../')
+    , http = require('http')
+    , _ = require('underscore')
+    , mustache = require('mustache')
 
 var example = function ($, conn) {
     $.on('ready', function (ready) {
